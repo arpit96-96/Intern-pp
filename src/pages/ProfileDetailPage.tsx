@@ -8,23 +8,34 @@ import { getPlatformLabel, isPlatform } from "@/utils/dataHelpers";
 import { formatCompactNumber, formatEngagementRate } from "@/utils/formatters";
 import { loadProfileByUsername } from "@/utils/profileLoader";
 
+interface ProfileDetailState {
+  username: string | null;
+  data: ProfileDetailResponse | null;
+}
+
 export function ProfileDetailPage() {
   const { username } = useParams<{ username: string }>();
   const [searchParams] = useSearchParams();
   const platformParam = searchParams.get("platform");
   const platform = isPlatform(platformParam) ? platformParam : null;
-  const [profileData, setProfileData] = useState<ProfileDetailResponse | null>(
-    null
-  );
-  const [loaded, setLoaded] = useState(false);
+  const [profileState, setProfileState] = useState<ProfileDetailState>({
+    username: null,
+    data: null,
+  });
 
   useEffect(() => {
     if (!username) return;
+    let isCurrent = true;
 
     loadProfileByUsername(username).then((data) => {
-      setProfileData(data);
-      setLoaded(true);
+      if (isCurrent) {
+        setProfileState({ username, data });
+      }
     });
+
+    return () => {
+      isCurrent = false;
+    };
   }, [username]);
 
   if (!username) {
@@ -35,6 +46,9 @@ export function ProfileDetailPage() {
       </Layout>
     );
   }
+
+  const loaded = profileState.username === username;
+  const profileData = loaded ? profileState.data : null;
 
   if (!loaded) {
     return (
@@ -62,12 +76,13 @@ export function ProfileDetailPage() {
   return (
     <Layout title={user.fullname}>
       <Link to="/" className="text-sm text-blue-600 mb-4 inline-block">
-        ← Back to search
+        &lt;- Back to search
       </Link>
 
       <div className="flex gap-6 items-start text-left max-w-2xl mx-auto">
         <img
           src={user.picture}
+          alt={user.fullname}
           className="w-24 h-24 rounded-full border"
         />
         <div className="flex-1">
@@ -139,9 +154,10 @@ export function ProfileDetailPage() {
             <a
               href={user.url}
               target="_blank"
+              rel="noreferrer"
               className="inline-block mt-4 text-blue-600 text-sm"
             >
-              View on platform →
+              View on platform -&gt;
             </a>
           )}
 
