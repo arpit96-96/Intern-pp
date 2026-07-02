@@ -1,4 +1,4 @@
-export function formatFollowers(count: number): string {
+export function formatCompactNumber(count: number): string {
   if (count >= 1000000) {
     return (count / 1000000).toFixed(1) + "M";
   }
@@ -6,6 +6,10 @@ export function formatFollowers(count: number): string {
     return (count / 1000).toFixed(1) + "K";
   }
   return count.toString();
+}
+
+export function formatFollowerCount(count: number): string {
+  return `${formatCompactNumber(count)} followers`;
 }
 
 export function formatEngagementRate(rate: number | undefined): string {

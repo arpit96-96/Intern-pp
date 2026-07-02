@@ -1,4 +1,5 @@
 export type Platform = "instagram" | "youtube" | "tiktok";
+export type ProfileKey = `${Platform}:${string}`;
 
 export interface UserProfileSummary {
   user_id: string;
@@ -44,4 +45,9 @@ export interface ProfileDetailResponse {
     success: boolean;
     user_profile: FullUserProfile;
   };
+}
+
+export interface SelectedProfile extends UserProfileSummary {
+  platform: Platform;
+  selectedAt: string;
 }

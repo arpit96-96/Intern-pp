@@ -3,14 +3,53 @@ import youtubeData from "@/assets/data/search/youtube.json";
 import tiktokData from "@/assets/data/search/tiktok.json";
 import type { Platform, SearchData, UserProfileSummary } from "@/types";
 
-const platformData: Record<Platform, SearchData> = {
-  instagram: instagramData as SearchData,
-  youtube: youtubeData as SearchData,
-  tiktok: tiktokData as SearchData,
+type RawUserProfileSummary = Omit<UserProfileSummary, "username"> & {
+  username?: string;
 };
 
+interface RawSearchData {
+  total: number;
+  accounts: Array<{
+    account: {
+      user_profile: RawUserProfileSummary;
+      audience_source: string;
+    };
+  }>;
+}
+
+export const PLATFORMS = ["instagram", "youtube", "tiktok"] as const;
+
+export const PLATFORM_LABELS: Record<Platform, string> = {
+  instagram: "Instagram",
+  youtube: "YouTube",
+  tiktok: "TikTok",
+};
+
+const platformData = {
+  instagram: instagramData,
+  youtube: youtubeData,
+  tiktok: tiktokData,
+} satisfies Record<Platform, RawSearchData>;
+
+function normalizeProfile(profile: RawUserProfileSummary): UserProfileSummary {
+  return {
+    ...profile,
+    username: profile.username ?? profile.handle ?? profile.user_id,
+  };
+}
+
 export function getSearchData(platform: Platform): SearchData {
-  return platformData[platform];
+  const data = platformData[platform];
+
+  return {
+    total: data.total,
+    accounts: data.accounts.map((item) => ({
+      account: {
+        audience_source: item.account.audience_source,
+        user_profile: normalizeProfile(item.account.user_profile),
+      },
+    })),
+  };
 }
 
 export function extractProfiles(platform: Platform): UserProfileSummary[] {
@@ -22,18 +61,18 @@ export function filterProfiles(
   profiles: UserProfileSummary[],
   query: string
 ): UserProfileSummary[] {
-  if (!query) return profiles;
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return profiles;
+
   return profiles.filter((p) => {
-    const matchUsername = p.username.includes(query);
-    const matchFullname = p.fullname.toLowerCase().includes(query.toLowerCase());
-    return matchUsername || matchFullname;
+    const matchUsername = p.username.toLowerCase().includes(normalizedQuery);
+    const matchFullname = p.fullname.toLowerCase().includes(normalizedQuery);
+    const matchHandle = p.handle?.toLowerCase().includes(normalizedQuery);
+
+    return matchUsername || matchFullname || Boolean(matchHandle);
   });
 }
 
-export const PLATFORMS: Platform[] = ["instagram", "youtube", "tiktok"];
-
 export function getPlatformLabel(platform: Platform): string {
-  if (platform === "instagram") return "Instagram";
-  if (platform === "youtube") return "YouTube";
-  return "TikTok";
+  return PLATFORM_LABELS[platform];
 }
