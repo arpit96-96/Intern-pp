@@ -76,3 +76,7 @@ export function filterProfiles(
 export function getPlatformLabel(platform: Platform): string {
   return PLATFORM_LABELS[platform];
 }
+
+export function isPlatform(value: string | null): value is Platform {
+  return PLATFORMS.includes(value as Platform);
+}

@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { AddToListButton } from "@/components/AddToListButton";
 import { Layout } from "@/components/Layout";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import type { FullUserProfile, ProfileDetailResponse } from "@/types";
+import { getPlatformLabel, isPlatform } from "@/utils/dataHelpers";
 import { formatCompactNumber, formatEngagementRate } from "@/utils/formatters";
 import { loadProfileByUsername } from "@/utils/profileLoader";
 
 export function ProfileDetailPage() {
   const { username } = useParams<{ username: string }>();
   const [searchParams] = useSearchParams();
-  const platform = searchParams.get("platform") || "unknown";
+  const platformParam = searchParams.get("platform");
+  const platform = isPlatform(platformParam) ? platformParam : null;
   const [profileData, setProfileData] = useState<ProfileDetailResponse | null>(
     null
   );
@@ -73,7 +76,9 @@ export function ProfileDetailPage() {
             <VerifiedBadge verified={user.is_verified} />
           </h2>
           <p className="text-gray-600">{user.fullname}</p>
-          <p className="text-xs text-gray-400 mt-1">Platform: {platform}</p>
+          <p className="text-xs text-gray-400 mt-1">
+            Platform: {platform ? getPlatformLabel(platform) : "Unknown"}
+          </p>
 
           {user.description && (
             <p className="mt-3 text-sm text-gray-700">{user.description}</p>
@@ -140,14 +145,9 @@ export function ProfileDetailPage() {
             </a>
           )}
 
-          {/* TODO: candidates must implement Add to List feature */}
-          {/* TODO: candidates must implement Add to List feature */}
-          <button
-            disabled
-            className="block mt-4 px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed"
-          >
-            Add to List
-          </button>
+          <div className="mt-4">
+            <AddToListButton profile={user} platform={platform} />
+          </div>
         </div>
       </div>
     </Layout>
