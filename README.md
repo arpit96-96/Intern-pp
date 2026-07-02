@@ -4,6 +4,10 @@ Influencer Compass is a React + TypeScript influencer discovery dashboard built 
 
 The app has been refactored from the starter code into a more production-ready frontend with stronger typing, cleaner state management, improved UI states, accessibility fixes, and regression coverage for shortlist behavior.
 
+## Demo
+
+Live demo: https://intern-pp.vercel.app/
+
 ## Live Workflow
 
 Users can:
