@@ -1,8 +1,8 @@
 import type { MouseEvent } from "react";
 import type { Platform, UserProfileSummary } from "@/types";
 import {
-  getProfileKey,
-  useSelectedProfilesStore,
+  useIsProfileSelected,
+  useSelectedProfileActions,
 } from "@/store/selectedProfilesStore";
 
 interface AddToListButtonProps {
@@ -16,16 +16,8 @@ export function AddToListButton({
   platform,
   stopPropagation = false,
 }: AddToListButtonProps) {
-  const addProfile = useSelectedProfilesStore((state) => state.addProfile);
-  const isSelected = useSelectedProfilesStore((state) =>
-    platform
-      ? state.profiles.some(
-          (selectedProfile) =>
-            getProfileKey(selectedProfile.platform, selectedProfile) ===
-            getProfileKey(platform, profile)
-        )
-      : false
-  );
+  const { addProfile } = useSelectedProfileActions();
+  const isSelected = useIsProfileSelected(profile, platform);
   const isDisabled = !platform || isSelected;
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {

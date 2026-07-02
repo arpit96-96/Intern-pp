@@ -1,15 +1,14 @@
 import { Link } from "react-router-dom";
 import {
-  getProfileKey,
-  useSelectedProfilesStore,
+  useSelectedProfileActions,
+  useSelectedProfiles,
 } from "@/store/selectedProfilesStore";
 import { getPlatformLabel } from "@/utils/dataHelpers";
 import { formatFollowerCount } from "@/utils/formatters";
 
 export function SelectedProfilesPanel() {
-  const profiles = useSelectedProfilesStore((state) => state.profiles);
-  const removeProfile = useSelectedProfilesStore((state) => state.removeProfile);
-  const clearProfiles = useSelectedProfilesStore((state) => state.clearProfiles);
+  const profiles = useSelectedProfiles();
+  const { removeProfile, clearProfiles } = useSelectedProfileActions();
 
   return (
     <section className="border rounded p-3 mb-4 text-left">
@@ -32,36 +31,32 @@ export function SelectedProfilesPanel() {
         <p className="text-sm text-gray-500">No profiles selected yet.</p>
       ) : (
         <ul className="space-y-2">
-          {profiles.map((profile) => {
-            const key = getProfileKey(profile.platform, profile);
-
-            return (
-              <li
-                key={key}
-                className="flex items-center justify-between gap-3 border-t pt-2"
+          {profiles.map((profile) => (
+            <li
+              key={profile.selectedAt}
+              className="flex items-center justify-between gap-3 border-t pt-2"
+            >
+              <Link
+                to={`/profile/${profile.username}?platform=${profile.platform}`}
+                className="min-w-0"
               >
-                <Link
-                  to={`/profile/${profile.username}?platform=${profile.platform}`}
-                  className="min-w-0"
-                >
-                  <span className="block text-sm font-semibold truncate">
-                    @{profile.username}
-                  </span>
-                  <span className="block text-xs text-gray-500">
-                    {getPlatformLabel(profile.platform)} -{" "}
-                    {formatFollowerCount(profile.followers)}
-                  </span>
-                </Link>
-                <button
-                  type="button"
-                  className="text-xs text-red-600 underline"
-                  onClick={() => removeProfile(key)}
-                >
-                  Remove
-                </button>
-              </li>
-            );
-          })}
+                <span className="block text-sm font-semibold truncate">
+                  @{profile.username}
+                </span>
+                <span className="block text-xs text-gray-500">
+                  {getPlatformLabel(profile.platform)} -{" "}
+                  {formatFollowerCount(profile.followers)}
+                </span>
+              </Link>
+              <button
+                type="button"
+                className="text-xs text-red-600 underline"
+                onClick={() => removeProfile(profile)}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
         </ul>
       )}
     </section>
