@@ -100,9 +100,9 @@ export function ProfileDetailPage() {
       <div className="mx-auto max-w-4xl animate-fade-in rounded-[32px] border border-slate-200 bg-white/90 p-6 shadow-sm sm:p-8">
         <Link
           to="/"
-          className="mb-6 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+          className="light-panel-action mb-6 inline-flex items-center rounded-full px-3 py-2 text-sm font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-400/40"
         >
-          ← Back to search
+          {"<- Back to search"}
         </Link>
 
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
@@ -187,9 +187,9 @@ export function ProfileDetailPage() {
                 href={user.url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-5 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                className="light-panel-action mt-5 inline-flex items-center rounded-full px-3 py-2 text-sm font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-400/40"
               >
-                View on platform →
+                {"View on platform ->"}
               </a>
             ) : null}
 
