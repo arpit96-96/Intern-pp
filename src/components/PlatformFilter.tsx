@@ -1,3 +1,4 @@
+import { Search } from "lucide-react";
 import type { Platform } from "@/types";
 import { PLATFORMS, getPlatformLabel } from "@/utils/dataHelpers";
 
@@ -26,7 +27,7 @@ export function PlatformFilter({
               type="button"
               aria-pressed={isSelected}
               onClick={() => onChange(p)}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-violet-400/40 ${
                 isSelected
                   ? "border-violet-500 bg-violet-600 text-white shadow-sm"
                   : "border-slate-200 bg-white text-slate-700 hover:border-violet-200 hover:text-violet-700"
@@ -39,9 +40,10 @@ export function PlatformFilter({
       </div>
       <label className="relative block">
         <span className="sr-only">Search creators</span>
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-          ⌕
-        </span>
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+          aria-hidden
+        />
         <input
           type="text"
           value={searchQuery}
