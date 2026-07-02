@@ -29,6 +29,7 @@ export function ProfileDetailPage() {
 
   useEffect(() => {
     if (!username) return;
+
     let isCurrent = true;
 
     loadProfileByUsername(username).then((data) => {
@@ -44,9 +45,13 @@ export function ProfileDetailPage() {
 
   if (!username) {
     return (
-      <Layout>
-        <p>Invalid profile</p>
-        <Link to="/">Back</Link>
+      <Layout title="Invalid profile" subtitle="The requested profile could not be found.">
+        <div className="rounded-[28px] border border-slate-200 bg-white/90 p-6 text-sm text-slate-600 shadow-sm">
+          <p className="mb-4">This profile route is missing a valid username.</p>
+          <Link to="/" className="font-semibold text-violet-600 hover:text-violet-700">
+            Back to search
+          </Link>
+        </div>
       </Layout>
     );
   }
@@ -58,21 +63,30 @@ export function ProfileDetailPage() {
 
   if (!loaded) {
     return (
-      <Layout title={`@${username}`}>
-        <p className="text-gray-400">Loading...</p>
+      <Layout title={`@${username}`} subtitle="Loading profile details...">
+        <div className="mx-auto max-w-4xl animate-fade-in rounded-[28px] border border-slate-200 bg-white/90 p-6 shadow-sm">
+          <div className="flex flex-col gap-6 md:flex-row">
+            <div className="h-24 w-24 animate-pulse rounded-full bg-slate-200" />
+            <div className="flex-1 space-y-3">
+              <div className="h-6 w-40 animate-pulse rounded bg-slate-200" />
+              <div className="h-4 w-56 animate-pulse rounded bg-slate-100" />
+              <div className="h-4 w-72 animate-pulse rounded bg-slate-100" />
+            </div>
+          </div>
+        </div>
       </Layout>
     );
   }
 
   if (!profileData && !fallbackProfile) {
     return (
-      <Layout title={`@${username}`}>
-        <p className="text-red-600 mb-4">
-          Could not load profile details for {username}
-        </p>
-        <Link to="/" className="text-blue-600 underline">
-          Back to search
-        </Link>
+      <Layout title={`@${username}`} subtitle="We couldn’t find the requested creator.">
+        <div className="rounded-[28px] border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700 shadow-sm">
+          <p className="mb-4">Could not load profile details for {username}.</p>
+          <Link to="/" className="font-semibold text-rose-700 underline">
+            Back to search
+          </Link>
+        </div>
       </Layout>
     );
   }
@@ -82,95 +96,103 @@ export function ProfileDetailPage() {
     : fallbackProfile!;
 
   return (
-    <Layout title={user.fullname}>
-      <Link to="/" className="text-sm text-blue-600 mb-4 inline-block">
-        &lt;- Back to search
-      </Link>
+    <Layout title={user.fullname} subtitle={`@${user.username} on ${platform ? getPlatformLabel(platform) : "the web"}`}>
+      <div className="mx-auto max-w-4xl animate-fade-in rounded-[32px] border border-slate-200 bg-white/90 p-6 shadow-sm sm:p-8">
+        <Link to="/" className="mb-6 inline-flex items-center text-sm font-semibold text-violet-600 transition hover:text-violet-700">
+          ← Back to search
+        </Link>
 
-      <div className="flex gap-6 items-start text-left max-w-2xl mx-auto">
-        <img
-          src={user.picture}
-          alt={user.fullname}
-          className="w-24 h-24 rounded-full border"
-        />
-        <div className="flex-1">
-          <h2 className="text-xl font-bold">
-            @{user.username}
-            <VerifiedBadge verified={user.is_verified} />
-          </h2>
-          <p className="text-gray-600">{user.fullname}</p>
-          <p className="text-xs text-gray-400 mt-1">
-            Platform: {platform ? getPlatformLabel(platform) : "Unknown"}
-          </p>
-
-          {user.description && (
-            <p className="mt-3 text-sm text-gray-700">{user.description}</p>
-          )}
-
-          <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-            <div className="border p-2 rounded">
-              <div className="text-gray-500">Followers</div>
-              <div className="font-semibold">
-                {formatCompactNumber(user.followers)}
-              </div>
+        <div className="flex flex-col gap-6 md:flex-row md:items-start">
+          <img
+            src={user.picture}
+            alt={user.fullname}
+            className="h-24 w-24 rounded-full border border-slate-200 object-cover shadow-sm"
+          />
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-2xl font-semibold text-slate-900">@{user.username}</h2>
+              <VerifiedBadge verified={user.is_verified} />
             </div>
-            <div className="border p-2 rounded">
-              <div className="text-gray-500">Engagement Rate</div>
-              <div className="font-semibold">
-                {formatEngagementRate(user.engagement_rate)}
+            <p className="mt-1 text-base text-slate-600">{user.fullname}</p>
+            <p className="mt-2 text-sm text-slate-500">
+              Platform: {platform ? getPlatformLabel(platform) : "Unknown"}
+            </p>
+
+            {user.description ? (
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-700">
+                {user.description}
+              </p>
+            ) : null}
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <div className="text-sm text-slate-500">Followers</div>
+                <div className="mt-1 text-lg font-semibold text-slate-900">
+                  {formatCompactNumber(user.followers)}
+                </div>
               </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <div className="text-sm text-slate-500">Engagement Rate</div>
+                <div className="mt-1 text-lg font-semibold text-slate-900">
+                  {formatEngagementRate(user.engagement_rate)}
+                </div>
+              </div>
+              {user.posts_count !== undefined ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="text-sm text-slate-500">Posts</div>
+                  <div className="mt-1 text-lg font-semibold text-slate-900">
+                    {user.posts_count}
+                  </div>
+                </div>
+              ) : null}
+              {user.avg_likes !== undefined ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="text-sm text-slate-500">Avg Likes</div>
+                  <div className="mt-1 text-lg font-semibold text-slate-900">
+                    {formatCompactNumber(user.avg_likes)}
+                  </div>
+                </div>
+              ) : null}
+              {user.avg_comments !== undefined ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="text-sm text-slate-500">Avg Comments</div>
+                  <div className="mt-1 text-lg font-semibold text-slate-900">
+                    {user.avg_comments}
+                  </div>
+                </div>
+              ) : null}
+              {user.avg_views !== undefined && user.avg_views > 0 ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="text-sm text-slate-500">Avg Views</div>
+                  <div className="mt-1 text-lg font-semibold text-slate-900">
+                    {formatCompactNumber(user.avg_views)}
+                  </div>
+                </div>
+              ) : null}
+              {user.engagements !== undefined ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="text-sm text-slate-500">Engagements</div>
+                  <div className="mt-1 text-lg font-semibold text-slate-900">
+                    {formatCompactNumber(user.engagements)}
+                  </div>
+                </div>
+              ) : null}
             </div>
-            {user.posts_count !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Posts</div>
-                <div className="font-semibold">{user.posts_count}</div>
-              </div>
-            )}
-            {user.avg_likes !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Avg Likes</div>
-                <div className="font-semibold">
-                  {formatCompactNumber(user.avg_likes)}
-                </div>
-              </div>
-            )}
-            {user.avg_comments !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Avg Comments</div>
-                <div className="font-semibold">{user.avg_comments}</div>
-              </div>
-            )}
-            {user.avg_views !== undefined && user.avg_views > 0 && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Avg Views</div>
-                <div className="font-semibold">
-                  {formatCompactNumber(user.avg_views)}
-                </div>
-              </div>
-            )}
-            {user.engagements !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Engagements</div>
-                <div className="font-semibold">
-                  {formatCompactNumber(user.engagements)}
-                </div>
-              </div>
-            )}
-          </div>
 
-          {user.url && (
-            <a
-              href={user.url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block mt-4 text-blue-600 text-sm"
-            >
-              View on platform -&gt;
-            </a>
-          )}
+            {user.url ? (
+              <a
+                href={user.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex items-center text-sm font-semibold text-violet-600 transition hover:text-violet-700"
+              >
+                View on platform →
+              </a>
+            ) : null}
 
-          <div className="mt-4">
-            <AddToListButton profile={user} platform={platform} />
+            <div className="mt-5">
+              <AddToListButton profile={user} platform={platform} />
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { memo } from "react";
+import { Link } from "react-router-dom";
 import type { Platform, UserProfileSummary } from "@/types";
 import { formatFollowerCount } from "@/utils/formatters";
 import { AddToListButton } from "./AddToListButton";
@@ -9,39 +10,35 @@ interface ProfileCardProps {
   platform: Platform;
 }
 
-export function ProfileCard({
+export const ProfileCard = memo(function ProfileCard({
   profile,
   platform,
 }: ProfileCardProps) {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate(`/profile/${profile.username}?platform=${platform}`);
-  };
-
   return (
-    <div
-      onClick={handleClick}
-      className="flex items-center gap-3 p-3 border border-gray-300 mb-2 cursor-pointer hover:bg-gray-50 w-full max-w-[700px]"
-    >
-      <img
-        src={profile.picture}
-        alt={profile.fullname}
-        className="w-12 h-12 rounded-full"
-      />
-      <div className="text-left flex-1">
-        <div className="font-bold">
-          @{profile.username}
-          <VerifiedBadge verified={profile.is_verified} />
+    <article className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md">
+      <Link
+        to={`/profile/${profile.username}?platform=${platform}`}
+        className="flex min-w-0 flex-1 items-center gap-4"
+      >
+        <img
+          src={profile.picture}
+          alt={profile.fullname}
+          className="h-14 w-14 rounded-full object-cover ring-2 ring-white shadow-sm"
+        />
+        <div className="min-w-0 text-left">
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-base font-semibold text-slate-900">
+              @{profile.username}
+            </h3>
+            <VerifiedBadge verified={profile.is_verified} />
+          </div>
+          <p className="truncate text-sm text-slate-600">{profile.fullname}</p>
+          <p className="mt-1 text-sm font-medium text-slate-500">
+            {formatFollowerCount(profile.followers)}
+          </p>
         </div>
-        <div className="text-sm text-gray-600">{profile.fullname}</div>
-        <div className="text-sm">{formatFollowerCount(profile.followers)}</div>
-      </div>
-      <AddToListButton
-        profile={profile}
-        platform={platform}
-        stopPropagation
-      />
-    </div>
+      </Link>
+      <AddToListButton profile={profile} platform={platform} stopPropagation />
+    </article>
   );
-}
+});
