@@ -4,7 +4,11 @@ import { AddToListButton } from "@/components/AddToListButton";
 import { Layout } from "@/components/Layout";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import type { FullUserProfile, ProfileDetailResponse } from "@/types";
-import { getPlatformLabel, isPlatform } from "@/utils/dataHelpers";
+import {
+  findProfileSummaryByUsername,
+  getPlatformLabel,
+  isPlatform,
+} from "@/utils/dataHelpers";
 import { formatCompactNumber, formatEngagementRate } from "@/utils/formatters";
 import { loadProfileByUsername } from "@/utils/profileLoader";
 
@@ -49,6 +53,8 @@ export function ProfileDetailPage() {
 
   const loaded = profileState.username === username;
   const profileData = loaded ? profileState.data : null;
+  const fallbackProfile =
+    loaded && username ? findProfileSummaryByUsername(username, platform) : null;
 
   if (!loaded) {
     return (
@@ -58,7 +64,7 @@ export function ProfileDetailPage() {
     );
   }
 
-  if (!profileData) {
+  if (!profileData && !fallbackProfile) {
     return (
       <Layout title={`@${username}`}>
         <p className="text-red-600 mb-4">
@@ -71,7 +77,9 @@ export function ProfileDetailPage() {
     );
   }
 
-  const user: FullUserProfile = profileData.data.user_profile;
+  const user: FullUserProfile = profileData
+    ? profileData.data.user_profile
+    : fallbackProfile!;
 
   return (
     <Layout title={user.fullname}>

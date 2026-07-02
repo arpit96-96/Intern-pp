@@ -57,6 +57,30 @@ export function extractProfiles(platform: Platform): UserProfileSummary[] {
   return data.accounts.map((item) => item.account.user_profile);
 }
 
+export function findProfileSummaryByUsername(
+  username: string,
+  platform: Platform | null
+): UserProfileSummary | null {
+  const normalizedUsername = username.toLowerCase();
+  const platforms = platform ? [platform] : PLATFORMS;
+
+  for (const currentPlatform of platforms) {
+    const profile = extractProfiles(currentPlatform).find((item) => {
+      const usernameMatches =
+        item.username.toLowerCase() === normalizedUsername;
+      const handleMatches = item.handle?.toLowerCase() === normalizedUsername;
+
+      return usernameMatches || handleMatches;
+    });
+
+    if (profile) {
+      return profile;
+    }
+  }
+
+  return null;
+}
+
 export function filterProfiles(
   profiles: UserProfileSummary[],
   query: string
